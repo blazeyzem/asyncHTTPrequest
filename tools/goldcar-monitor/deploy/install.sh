@@ -18,6 +18,8 @@ die() { printf '\033[1;31m!!\033[0m %s\n' "$*" >&2; exit 1; }
 if [[ "$MODE" == "docker" ]]; then
   command -v docker >/dev/null || die "brak dockera na tej maszynie"
   [[ -f "$SRC_DIR/deploy/config.json" ]] || die "utworz deploy/config.json (wzor: config.example.json)"
+  [[ -f "$SRC_DIR/deploy/.env" ]] || die "utworz deploy/.env (wzor: .env.example) z SMTP_USER i SMTP_PASS"
+  chmod 600 "$SRC_DIR/deploy/.env"
   mkdir -p "$SRC_DIR/deploy/data" "$SRC_DIR/deploy/capture"
   log "buduje obraz i startuje kontener"
   docker compose -f "$SRC_DIR/deploy/docker-compose.yml" up -d --build
@@ -31,7 +33,7 @@ NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 
 log "kopiuje pliki do $APP_DIR"
 mkdir -p "$APP_DIR"
-for item in package.json monitor.mjs discover.mjs lib test config.example.json; do
+for item in package.json monitor.mjs discover.mjs lib test config.example.json .env.example; do
   cp -r "$SRC_DIR/$item" "$APP_DIR/"
 done
 mkdir -p "$APP_DIR/data" "$APP_DIR/capture"
@@ -40,7 +42,13 @@ if [[ ! -f "$APP_DIR/config.json" ]]; then
   cp "$SRC_DIR/config.example.json" "$APP_DIR/config.json"
   log "utworzono $APP_DIR/config.json z szablonu - UZUPELNIJ bookingUrl i targets"
 fi
-chmod 600 "$APP_DIR/config.json"   # w srodku moga byc dane SMTP
+chmod 600 "$APP_DIR/config.json"
+
+if [[ ! -f "$APP_DIR/.env" ]]; then
+  cp "$SRC_DIR/.env.example" "$APP_DIR/.env"
+  log "utworzono $APP_DIR/.env - wpisz SMTP_USER i SMTP_PASS (haslo aplikacji Google)"
+fi
+chmod 600 "$APP_DIR/.env"
 
 log "instaluje zaleznosci i Chromium"
 ( cd "$APP_DIR" && PLAYWRIGHT_BROWSERS_PATH="$APP_DIR/.ms-playwright" npm install --omit=dev --no-audit --no-fund )
@@ -73,9 +81,11 @@ cat <<TXT
 
 Gotowe. Dalej:
   1. uzupelnij $APP_DIR/config.json  (bookingUrl, targets, notify)
-  2. test:        cd $APP_DIR && node test/smoke.mjs
-  3. zwiad:       cd $APP_DIR && node discover.mjs
-  4. jedno biegniecie: sudo systemctl start goldcar-monitor.service
-  5. logi:        journalctl -u goldcar-monitor.service -f
-  6. historia:    $APP_DIR/data/history.csv
+  2. sekrety:     $APP_DIR/.env  (SMTP_USER, SMTP_PASS)
+  3. test poczty: cd $APP_DIR && node monitor.mjs --test-mail
+  4. test ekstraktora: cd $APP_DIR && node test/smoke.mjs
+  5. zwiad:       cd $APP_DIR && node discover.mjs
+  6. jedno biegniecie: sudo systemctl start goldcar-monitor.service
+  7. logi:        journalctl -u goldcar-monitor.service -f
+  8. historia:    $APP_DIR/data/history.csv
 TXT

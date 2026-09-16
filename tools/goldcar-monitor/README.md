@@ -21,6 +21,22 @@ copy config.example.json config.json
 
 ## Konfiguracja
 
+Sekrety idą do `.env` (chmod 600), nie do `config.json` — w configu zostają tylko
+placeholdery `${SMTP_USER}` / `${SMTP_PASS}`, które loader podstawia przy starcie
+i przerywa z czytelnym błędem, gdy któraś zmienna jest nieustawiona.
+
+```bash
+cp .env.example .env && chmod 600 .env
+```
+
+Gmail: potrzebne **hasło aplikacji** (Konto Google → Bezpieczeństwo → Hasła do aplikacji).
+Zwykłe hasło nie przejdzie przy weryfikacji dwuetapowej. Test bez czekania na zmianę ceny:
+
+```bash
+node monitor.mjs --test-mail
+```
+
+
 1. Wejdź na goldcar.es, wyszukaj swój termin (miejsce odbioru/zwrotu, daty, godziny).
 2. Skopiuj URL strony z wynikami i wklej go do `config.json` jako `bookingUrl`.
 3. Ustaw `targets` — każdy cel to nazwa, `match` (regex po nazwie/opisie oferty)
@@ -32,6 +48,7 @@ copy config.example.json config.json
 node discover.mjs --headed   :: jednorazowo: zrzut XHR + HTML + screenshot do capture\
 node monitor.mjs --once      :: jedno sprawdzenie
 node monitor.mjs --watch     :: pętla wg poll.intervalMinutes
+node monitor.mjs --test-mail :: sprawdzenie samego SMTP
 node test\smoke.mjs          :: test ekstraktora na lokalnym fixture
 ```
 

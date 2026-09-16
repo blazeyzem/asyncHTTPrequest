@@ -1,5 +1,5 @@
 {
-  "_comment": "Skopiuj do config.json i uzupelnij. bookingUrl = URL listy ofert skopiowany z przegladarki po wykonaniu wyszukiwania na goldcar.es",
+  "_comment": "Skopiuj do config.json i uzupelnij. bookingUrl = URL listy ofert z goldcar.es po wyszukaniu terminu. Sekrety (SMTP_USER/SMTP_PASS) trzymaj w pliku .env obok, nie tutaj.",
   "bookingUrl": "",
   "search": {
     "pickupLocation": "ALC - Alicante Airport",
@@ -13,7 +13,11 @@
     "currency": "EUR"
   },
   "targets": [
-    { "name": "dowolna oferta", "match": ".*", "maxPrice": 400 }
+    {
+      "name": "dowolna oferta",
+      "match": ".*",
+      "maxPrice": 400
+    }
   ],
   "alerts": {
     "onDrop": true,
@@ -28,10 +32,18 @@
     "console": true,
     "webhook": "",
     "email": {
-      "enabled": false,
+      "enabled": true,
       "to": "blazeyzem@gmail.com",
-      "from": "",
-      "smtp": { "host": "smtp.gmail.com", "port": 465, "secure": true, "user": "", "pass": "" }
+      "from": "Goldcar monitor <${SMTP_USER}>",
+      "smtp": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "secure": true,
+        "auth": {
+          "user": "${SMTP_USER}",
+          "pass": "${SMTP_PASS}"
+        }
+      }
     }
   },
   "browser": {

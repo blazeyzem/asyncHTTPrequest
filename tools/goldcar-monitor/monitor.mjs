@@ -8,12 +8,29 @@ import { fileURLToPath } from 'node:url';
 import { openPage, acceptCookies } from './lib/browser.mjs';
 import { domExtractor, normalize, pickTarget } from './lib/extract.mjs';
 import { appendHistory, lastEntry, writeCsv, ensureDir } from './lib/store.mjs';
-import { notify } from './lib/notify.mjs';
+import { notify, sendMail, verifyMail } from './lib/notify.mjs';
+import { loadConfig } from './lib/config.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const cfg = JSON.parse(fs.readFileSync(path.join(here, 'config.json'), 'utf8'));
+let cfg;
+try {
+  cfg = loadConfig(here);
+} catch (e) {
+  console.error(`Blad konfiguracji: ${e.message}`);
+  process.exit(1);
+}
 const dataDir = ensureDir(path.join(here, 'data'));
 const watch = process.argv.includes('--watch');
+
+// Sprawdzenie samej poczty, bez ruszania Goldcara.
+if (process.argv.includes('--test-mail')) {
+  await verifyMail(cfg);
+  const r = await sendMail(cfg, 'Goldcar monitor: test powiadomien',
+    `Jesli to czytasz, SMTP dziala.\n\nMonitorowany URL:\n${cfg.bookingUrl}\n\nCele:\n` +
+    cfg.targets.map(t => `  - ${t.name} (match: ${t.match ?? '.*'}, prog: ${t.maxPrice ?? 'brak'})`).join('\n'));
+  console.log('wyslano:', JSON.stringify(r));
+  process.exit(0);
+}
 
 async function fetchOffers() {
   const { browser, page } = await openPage(cfg);

@@ -10,6 +10,7 @@ services:
       TZ: Europe/Warsaw
     volumes:
       - ./config.json:/app/config.json:ro
+      - ./.env:/app/.env:ro
       - ./data:/app/data
       - ./capture:/app/capture
     # Chromium potrzebuje wiekszego /dev/shm, inaczej potrafi sie wysypac przy renderowaniu

@@ -11,8 +11,15 @@ import { fileURLToPath } from 'node:url';
 import { openPage, acceptCookies } from './lib/browser.mjs';
 import { domExtractor, normalize } from './lib/extract.mjs';
 import { ensureDir } from './lib/store.mjs';
+import { loadConfig } from './lib/config.mjs';
 
-const cfg = JSON.parse(fs.readFileSync(fileURLToPath(new URL('./config.json', import.meta.url)), 'utf8'));
+let cfg;
+try {
+  cfg = loadConfig(path.dirname(fileURLToPath(import.meta.url)));
+} catch (e) {
+  console.error(`Blad konfiguracji: ${e.message}`);
+  process.exit(1);
+}
 const args = process.argv.slice(2);
 if (args.includes('--headed')) cfg.browser = { ...cfg.browser, headless: false };
 const url = args.find(a => a.startsWith('http')) || cfg.bookingUrl;

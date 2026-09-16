@@ -8,12 +8,11 @@
     "discover": "node discover.mjs",
     "check": "node monitor.mjs --once",
     "watch": "node monitor.mjs --watch",
-    "test": "node test/smoke.mjs"
+    "test": "node test/smoke.mjs",
+    "test-mail": "node monitor.mjs --test-mail"
   },
   "dependencies": {
-    "playwright": "^1.47.0"
-  },
-  "optionalDependencies": {
+    "playwright": "^1.47.0",
     "nodemailer": "^6.9.14"
   }
 }
