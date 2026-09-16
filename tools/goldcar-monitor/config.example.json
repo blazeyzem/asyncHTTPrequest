@@ -1,0 +1,44 @@
+{
+  "_comment": "Skopiuj do config.json i uzupelnij. bookingUrl = URL listy ofert skopiowany z przegladarki po wykonaniu wyszukiwania na goldcar.es",
+  "bookingUrl": "",
+  "search": {
+    "pickupLocation": "ALC - Alicante Airport",
+    "dropoffLocation": "ALC - Alicante Airport",
+    "pickupDate": "2026-07-18",
+    "pickupTime": "10:00",
+    "dropoffDate": "2026-08-01",
+    "dropoffTime": "10:00",
+    "driverAge": 45,
+    "residence": "PL",
+    "currency": "EUR"
+  },
+  "targets": [
+    { "name": "dowolna oferta", "match": ".*", "maxPrice": 400 }
+  ],
+  "alerts": {
+    "onDrop": true,
+    "onRise": false,
+    "minDeltaPct": 1.0
+  },
+  "poll": {
+    "intervalMinutes": 180,
+    "jitterMinutes": 20
+  },
+  "notify": {
+    "console": true,
+    "webhook": "",
+    "email": {
+      "enabled": false,
+      "to": "blazeyzem@gmail.com",
+      "from": "",
+      "smtp": { "host": "smtp.gmail.com", "port": 465, "secure": true, "user": "", "pass": "" }
+    }
+  },
+  "browser": {
+    "headless": true,
+    "locale": "pl-PL",
+    "timezoneId": "Europe/Warsaw",
+    "userAgent": "",
+    "waitMs": 45000
+  }
+}

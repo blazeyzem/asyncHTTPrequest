@@ -1,0 +1,19 @@
+{
+  "name": "goldcar-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Monitor ceny konkretnego terminu wynajmu w Goldcar",
+  "scripts": {
+    "discover": "node discover.mjs",
+    "check": "node monitor.mjs --once",
+    "watch": "node monitor.mjs --watch",
+    "test": "node test/smoke.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.47.0"
+  },
+  "optionalDependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}
