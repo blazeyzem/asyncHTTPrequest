@@ -38,6 +38,32 @@ node test\smoke.mjs          :: test ekstraktora na lokalnym fixture
 Wyniki lądują w `data\history.jsonl` (pełne) i `data\history.csv` (do Excela).
 Alert leci na konsolę, opcjonalnie na webhook i/lub e-mail (SMTP w `config.json`).
 
+## Wdrożenie na serwerze (app01)
+
+Z katalogu repo na maszynie:
+
+```bash
+git clone -b claude/goldcar-price-monitoring-ip20rl https://github.com/blazeyzem/asyncHTTPrequest.git
+cd asyncHTTPrequest/tools/goldcar-monitor
+
+sudo ./deploy/install.sh          # /opt/goldcar-monitor + systemd timer co 3h (+ jitter 25 min)
+sudo nano /opt/goldcar-monitor/config.json
+sudo systemctl start goldcar-monitor.service      # pierwsze sprawdzenie od razu
+journalctl -u goldcar-monitor.service -f
+```
+
+Wariant kontenerowy (monitor chodzi w pętli `--watch`, restart po reboocie):
+
+```bash
+cp config.example.json deploy/config.json && nano deploy/config.json
+./deploy/install.sh --docker
+docker logs -f goldcar-monitor
+```
+
+Zmienne: `APP_DIR` (domyślnie `/opt/goldcar-monitor`), `RUN_USER` (domyślnie wywołujący).
+Jeśli na maszynie nie da się pobrać Chromium z CDN Playwrighta, zainstaluj systemowy
+(`apt install chromium`) i ustaw `PLAYWRIGHT_CHROMIUM_PATH=/usr/bin/chromium` — skrypty to honorują.
+
 ## Harmonogram zadań Windows
 
 ```cmd

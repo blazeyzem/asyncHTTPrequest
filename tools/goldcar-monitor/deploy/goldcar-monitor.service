@@ -1,0 +1,21 @@
+[Unit]
+Description=Goldcar price check (one-shot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__RUN_USER__
+WorkingDirectory=__APP_DIR__
+Environment=NODE_ENV=production
+Environment=TZ=Europe/Warsaw
+Environment=PLAYWRIGHT_BROWSERS_PATH=__APP_DIR__/.ms-playwright
+# Gdy Chromium pochodzi z repo dystrybucji zamiast z Playwrighta:
+# Environment=PLAYWRIGHT_CHROMIUM_PATH=/usr/bin/chromium
+ExecStart=/usr/bin/env node monitor.mjs --once
+# nie blokujemy bez konca, gdyby strona wisiala
+TimeoutStartSec=600
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

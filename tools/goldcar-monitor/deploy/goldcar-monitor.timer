@@ -1,0 +1,12 @@
+[Unit]
+Description=Goldcar price check co 3h (z losowym opoznieniem)
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=3h
+RandomizedDelaySec=25min
+Persistent=true
+Unit=goldcar-monitor.service
+
+[Install]
+WantedBy=timers.target

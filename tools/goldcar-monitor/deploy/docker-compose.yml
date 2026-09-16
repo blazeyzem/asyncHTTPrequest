@@ -1,0 +1,21 @@
+services:
+  goldcar-monitor:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: goldcar-monitor:latest
+    container_name: goldcar-monitor
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Warsaw
+    volumes:
+      - ./config.json:/app/config.json:ro
+      - ./data:/app/data
+      - ./capture:/app/capture
+    # Chromium potrzebuje wiekszego /dev/shm, inaczej potrafi sie wysypac przy renderowaniu
+    shm_size: "1gb"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
